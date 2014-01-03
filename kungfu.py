@@ -17,7 +17,7 @@ if not pygame.mixer: print ('Warning, sound disabled')
 
 # __file__ python's internal variables
 main_dir = os.path.split(os.path.abspath(__file__))[0]
-data_dir = os.path.join(main_dir, 'elves-wood')
+data_dir = os.path.join(main_dir, 'data')
 
 #functions to create our resources
 def load_image(file):
@@ -50,24 +50,18 @@ def load_sound(name):
         raise SystemExit(str(geterror()))
     return sound
 
-# initializer for class Archer
-def archer_init():
+# initializer for class GameObject
+def object_init():
     """ the single image as default """
-    Archer.single_image = load_image('archer.png')
-    Archer.image_dict[K_a] = load_images('archer-bow.png', 'archer-bow-attack1.png', 'archer-bow-attack2.png', \
-        'archer-bow-attack3.png', 'archer-bow-attack4.png')
-    Archer.image_dict[K_i] = load_images('archer-idle-1.png', 'archer-idle-2.png', \
-        'archer-idle-3.png', 'archer-idle-4.png', 'archer-idle-5.png', 'archer-idle-6.png')
-    Archer.image_dict[K_d] = load_images('archer-die1.png', 'archer-die2.png', \
-        'archer-die3.png', 'archer-die4.png')
-    Archer.image_dict[K_s] = load_images('archer-sword.png', 'archer-sword-1.png', 'archer-sword-2.png', \
-        'archer-sword-3.png', 'archer-sword-4.png')
-    Archer.image_dict[K_l] = load_images('alien1.png', 'alien2.png', 'alien3.png')
-    Archer.image_dict[K_c] = load_images('cube-1.png', 'cube-2.png', 'cube-3.png', 'cube-4.png')
+    GameObject.single_image = load_image('stand-still.png')
+    GameObject.image_dict[K_h] = load_images('left-fist.png')
+    GameObject.image_dict[K_l] = load_images('right-fist.png')
+    GameObject.image_dict[K_j] = load_images('left-kick.png')
+    GameObject.image_dict[K_k] = load_images('right-kick.png')
    
 
 #classes for our game objects
-class Archer(pygame.sprite.Sprite):
+class GameObject(pygame.sprite.Sprite):
     speed = 10
     animcycle = 12
     images = []
@@ -118,9 +112,9 @@ def main():
 
 #Prepare Game Objects
     clock = pygame.time.Clock()
-    archer_init()
-    archer = Archer()
-    allsprites = pygame.sprite.RenderPlain((archer))
+    object_init()
+    game_obj = GameObject()
+    allsprites = pygame.sprite.RenderPlain((game_obj))
 
 #Main Loop
     going = True
@@ -132,14 +126,14 @@ def main():
             if event.type == QUIT:
                 going = False
             elif event.type == KEYDOWN:
-                archer.get_key(event.key)
+                game_obj.get_key(event.key)
 
         allsprites.update()
 
         keystate = pygame.key.get_pressed()
         direct_x = keystate[K_RIGHT] - keystate[K_LEFT]
         direct_y = keystate[K_DOWN] - keystate[K_UP]
-        archer.move(direct_x, direct_y)
+        game_obj.move(direct_x, direct_y)
 
         #Draw Everything
         screen.blit(background, (0, 0))
