@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import random, os.path
+import ConfigParser
 
 #import basic pygame modules
 import pygame
@@ -56,6 +57,28 @@ class GameObject(pygame.sprite.Sprite):
     def update(self):
         pass
 
+# we'll manage all sprite groups in this class
+class GroupManger():
+    def __init__(self):
+        self.groups = {}
+        pass
+    
+    def group_init(self):
+        pass
+
+    def group_clean(self):
+        pass
+
+    def group_update(self):
+        pass
+
+    def group_draw(self):
+        pass
+
+# do init work and return sprite group
+def init():
+    pass
+
 def main(winstyle = 0):
     # Initialize pygame
     pygame.init()
@@ -65,9 +88,9 @@ def main(winstyle = 0):
 
         #cap the framerate
         clock.tick(60)
+        pygame.display.flip()
 
     pygame.quit()
-
 
 
 #call the "main" function if running this script
