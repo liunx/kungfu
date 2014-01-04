@@ -52,6 +52,8 @@ def load_sound(name):
 
 # initializer for class GameObject
 def object_init():
+    # init sound
+    GameObject.punch = load_sound('punch.wav')
     """ the single image as default """
     GameObject.single_image = load_image('stand-still.png')
     GameObject.image_dict['default'] = load_images('stand-still.png')
@@ -69,6 +71,7 @@ class GameObject(pygame.sprite.Sprite):
     images = []
     single_image = None
     image_dict = {}
+    punch = None
     """ add a new sprite """
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) # call Sprite initializer
@@ -110,6 +113,7 @@ class GameObject(pygame.sprite.Sprite):
             self.images = []
             self.images = self.image_dict[key]
             self.do_action = 1
+            self.punch.play()
 
 def main():
     """this function is called when the program starts.
