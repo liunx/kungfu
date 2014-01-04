@@ -54,6 +54,7 @@ def load_sound(name):
 def object_init():
     """ the single image as default """
     GameObject.single_image = load_image('stand-still.png')
+    GameObject.image_dict['default'] = load_images('stand-still.png')
     GameObject.image_dict[K_h] = load_images('left-fist.png')
     GameObject.image_dict[K_l] = load_images('right-fist.png')
     GameObject.image_dict[K_j] = load_images('left-kick.png')
@@ -64,6 +65,7 @@ def object_init():
 class GameObject(pygame.sprite.Sprite):
     speed = 10
     animcycle = 12
+    delay = 20
     images = []
     single_image = None
     image_dict = {}
@@ -75,11 +77,25 @@ class GameObject(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.frame = 0
         self.images_len = 1
+        # we just can complete one action before doing a new action
+        self.do_action = 0
+        self.delta_frame = 0
 
     def update(self):
         """ show our sprite up """
-        self.frame = self.frame + 1
-        self.image = self.images[self.frame // self.animcycle % len(self.images)]
+        if self.do_action == 0:
+            self.image = self.image_dict['default'][0]
+            self.frame = 0
+        else:
+            self.frame = self.frame + 1
+            image_index = self.frame // self.animcycle % len(self.images)
+            # check delay
+            if image_index == (len(self.images) - 1) and self.delta_frame == self.delay:
+                self.do_action = 0
+                self.delta_frame = 0
+            else:
+                self.delta_frame = self.delta_frame + 1
+            self.image = self.images[image_index]
 
     def move(self, direct_x, direct_y):
         """ move the player """
@@ -87,9 +103,13 @@ class GameObject(pygame.sprite.Sprite):
 
     def get_key(self, key):
         """ get user input and reponse in actions """
+        if self.do_action == 1:
+            return
+
         if key in self.image_dict:
             self.images = []
             self.images = self.image_dict[key]
+            self.do_action = 1
 
 def main():
     """this function is called when the program starts.
@@ -98,13 +118,13 @@ def main():
 #Initialize Everything
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption('Elves-wood')
+    pygame.display.set_caption('Kung Fu')
     pygame.mouse.set_visible(0)
 
 #Create The Backgound
     background = pygame.Surface(screen.get_size())
     background = background.convert()
-    background.fill((0, 0, 0))
+    background.fill((255, 255, 255))
 
 #Display The Background
     screen.blit(background, (0, 0))
