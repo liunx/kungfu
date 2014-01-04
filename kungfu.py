@@ -50,22 +50,22 @@ def load_sound(name):
         raise SystemExit(str(geterror()))
     return sound
 
-# initializer for class GameObject
+# initializer for class Player
 def object_init():
     # init sound
-    GameObject.punch = load_sound('punch.wav')
+    Player.punch = load_sound('punch.wav')
     """ the single image as default """
-    GameObject.single_image = load_image('stand-still.png')
-    GameObject.image_dict['default'] = load_images('stand-still.png')
-    GameObject.image_dict[K_h] = load_images('left-fist.png')
-    GameObject.image_dict[K_l] = load_images('right-fist.png')
-    GameObject.image_dict[K_j] = load_images('left-kick.png')
-    GameObject.image_dict[K_k] = load_images('right-kick.png')
-   
+    Player.single_image = load_image('stand-still.png')
+    Player.image_dict['default'] = load_images('stand-still.png')
+    Player.image_dict[K_a] = load_images('left-fist.png')
+    Player.image_dict[K_s] = load_images('right-fist.png')
+    Player.image_dict[K_d] = load_images('left-kick.png')
+    Player.image_dict[K_f] = load_images('right-kick.png')
+  
 
 #classes for our game objects
-class GameObject(pygame.sprite.Sprite):
-    speed = 10
+class Player(pygame.sprite.Sprite):
+    speed = 1
     animcycle = 12
     delay = 20
     images = []
@@ -83,6 +83,9 @@ class GameObject(pygame.sprite.Sprite):
         # we just can complete one action before doing a new action
         self.do_action = 0
         self.delta_frame = 0
+        self.direct_x = 0
+        self.direct_y = 0
+        self.curr_key = 'default'
 
     def update(self):
         """ show our sprite up """
@@ -102,7 +105,9 @@ class GameObject(pygame.sprite.Sprite):
 
     def move(self, direct_x, direct_y):
         """ move the player """
-        self.rect.move_ip(direct_x * self.speed, direct_y * self.speed);
+        self.rect.move_ip((direct_x  - self.direct_x) * self.speed, (direct_y - self.direct_y) * self.speed);
+        self.direct_x = direct_x
+        self.direct_y = direct_y
 
     def get_key(self, key):
         """ get user input and reponse in actions """
@@ -113,7 +118,22 @@ class GameObject(pygame.sprite.Sprite):
             self.images = []
             self.images = self.image_dict[key]
             self.do_action = 1
+            self.curr_key = key
             self.punch.play()
+
+#classes for our game objects
+class Mouse(pygame.sprite.Sprite):
+    """moves a clenched fist on the screen, following the mouse"""
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self) #call Sprite initializer
+        self.image = load_image('mouse-target.png')
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        "move the fist based on the mouse position"
+        pos = pygame.mouse.get_pos()
+        self.rect.midtop = pos
+
 
 def main():
     """this function is called when the program starts.
@@ -137,8 +157,9 @@ def main():
 #Prepare Game Objects
     clock = pygame.time.Clock()
     object_init()
-    game_obj = GameObject()
-    allsprites = pygame.sprite.RenderPlain((game_obj))
+    game_obj = Player()
+    mouse = Mouse()
+    allsprites = pygame.sprite.RenderPlain((game_obj, mouse))
 
 #Main Loop
     going = True
@@ -154,9 +175,13 @@ def main():
 
         allsprites.update()
 
+        """
         keystate = pygame.key.get_pressed()
         direct_x = keystate[K_RIGHT] - keystate[K_LEFT]
         direct_y = keystate[K_DOWN] - keystate[K_UP]
+        """
+        # follow mouse
+        direct_x, direct_y = pygame.mouse.get_pos()
         game_obj.move(direct_x, direct_y)
 
         #Draw Everything
