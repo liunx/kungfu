@@ -57,11 +57,13 @@ def object_init():
     """ the single image as default """
     Player.single_image = load_image('stand-still.png')
     Player.image_dict['default'] = load_images('stand-still.png')
-    Player.image_dict[K_a] = load_images('left-fist.png')
-    Player.image_dict[K_s] = load_images('right-fist.png')
-    Player.image_dict[K_d] = load_images('left-kick.png')
-    Player.image_dict[K_f] = load_images('right-kick.png')
-  
+    Player.image_dict['left-fist'] = load_images('left-fist.png')
+    Player.image_dict['right-fist'] = load_images('right-fist.png')
+    Player.image_dict['left-kick'] = load_images('left-kick.png')
+    Player.image_dict['right-kick'] = load_images('right-kick.png')
+    Player.action_dict[K_a] = '-fist'
+    Player.action_dict[K_s] = '-kick'
+
 
 #classes for our game objects
 class Player(pygame.sprite.Sprite):
@@ -71,6 +73,7 @@ class Player(pygame.sprite.Sprite):
     images = []
     single_image = None
     image_dict = {}
+    action_dict = {}
     punch = None
     """ add a new sprite """
     def __init__(self):
@@ -85,7 +88,7 @@ class Player(pygame.sprite.Sprite):
         self.delta_frame = 0
         self.direct_x = 0
         self.direct_y = 0
-        self.curr_key = 'default'
+        self.curr_key = None
 
     def update(self):
         """ show our sprite up """
@@ -114,12 +117,26 @@ class Player(pygame.sprite.Sprite):
         if self.do_action == 1:
             return
 
-        if key in self.image_dict:
-            self.images = []
-            self.images = self.image_dict[key]
-            self.do_action = 1
-            self.curr_key = key
-            self.punch.play()
+        if key in self.action_dict:
+            self.curr_key = self.action_dict[key]
+        else:
+            button = None
+            if key == 'LEFT':
+                button = 'left'
+            elif key == 'MIDDLE':
+                button = 'middle'
+            elif key == 'RIGHT':
+                button = 'right'
+            else:
+                print("Unknown mouse button pressed!")
+                return
+            if self.curr_key is not None:
+                self.images = []
+                key = button + self.curr_key
+                if key in self.image_dict:
+                    self.images = self.image_dict[key]
+                    self.do_action = 1
+                    self.punch.play()
 
 #classes for our game objects
 class Mouse(pygame.sprite.Sprite):
@@ -172,6 +189,17 @@ def main():
                 going = False
             elif event.type == KEYDOWN:
                 game_obj.get_key(event.key)
+            elif event.type == MOUSEBUTTONDOWN:
+                key = None
+                button1, button2, button3 = pygame.mouse.get_pressed()
+                # we don't allow both buttons pressed now
+                if button1 == 1:
+                    key = 'LEFT'
+                elif button2 == 1:
+                    key = 'MIDDLE'
+                elif button3 == 1:
+                    key = 'RIGHT'
+                game_obj.get_key(key)
 
         allsprites.update()
 
