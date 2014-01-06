@@ -19,6 +19,8 @@ if not pygame.mixer: print ('Warning, sound disabled')
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, 'data')
 
+SCREENRECT      = Rect(0, 0, 800, 600)
+
 #functions to create our resources
 def load_image(file):
     "loads an image, prepares it for play"
@@ -80,7 +82,8 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) # call Sprite initializer
         self.image = self.single_image
         self.images.append(self.single_image)
-        self.rect = self.image.get_rect()
+        # posite player on the midbotton
+        self.rect = self.image.get_rect(midbottom=SCREENRECT.midbottom)
         self.frame = 0
         self.images_len = 1
         # we just can complete one action before doing a new action
@@ -151,6 +154,24 @@ class Mouse(pygame.sprite.Sprite):
         pos = pygame.mouse.get_pos()
         self.rect.midtop = pos
 
+# This class used collison
+class Block(pygame.sprite.Sprite):
+    # Constructor. Pass in the color of the block, 
+    # and its x and y position
+    def __init__(self, color, width, height):
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+
+        # Create an image of the block, and fill it with a color.
+        # This could also be an image loaded from the disk.
+        self.image = pygame.Surface([width, height])
+        self.image.fill(color)
+
+        # Fetch the rectangle object that has the dimensions of the image
+        # image.
+        # Update the position of this object by setting the values 
+        # of rect.x and rect.y
+        self.rect = self.image.get_rect()
 
 def main():
     """this function is called when the program starts.
@@ -158,7 +179,14 @@ def main():
        a loop until the function returns."""
 #Initialize Everything
     pygame.init()
-    screen = pygame.display.set_mode((800, 600))
+    if pygame.mixer and not pygame.mixer.get_init():
+        print ('Warning, no sound')
+        pygame.mixer = None
+
+    # Set the display mode
+    winstyle = 0  # |FULLSCREEN
+    bestdepth = pygame.display.mode_ok(SCREENRECT.size, winstyle, 32)
+    screen = pygame.display.set_mode(SCREENRECT.size, winstyle, bestdepth)
     pygame.display.set_caption('Kung Fu')
     pygame.mouse.set_visible(0)
 
@@ -190,6 +218,7 @@ def main():
             elif event.type == KEYDOWN:
                 game_obj.get_key(event.key)
             elif event.type == MOUSEBUTTONDOWN:
+                # attacking when mouse down
                 key = None
                 button1, button2, button3 = pygame.mouse.get_pressed()
                 # we don't allow both buttons pressed now
@@ -202,15 +231,6 @@ def main():
                 game_obj.get_key(key)
 
         allsprites.update()
-
-        """
-        keystate = pygame.key.get_pressed()
-        direct_x = keystate[K_RIGHT] - keystate[K_LEFT]
-        direct_y = keystate[K_DOWN] - keystate[K_UP]
-        """
-        # follow mouse
-        direct_x, direct_y = pygame.mouse.get_pos()
-        game_obj.move(direct_x, direct_y)
 
         #Draw Everything
         screen.blit(background, (0, 0))
