@@ -154,24 +154,20 @@ class Mouse(pygame.sprite.Sprite):
         pos = pygame.mouse.get_pos()
         self.rect.midtop = pos
 
-# This class used collison
-class Block(pygame.sprite.Sprite):
+# These classes used collison
+class Attack(pygame.sprite.Sprite):
     # Constructor. Pass in the color of the block, 
     # and its x and y position
-    def __init__(self, color, width, height):
+    def __init__(self):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self) 
 
-        # Create an image of the block, and fill it with a color.
-        # This could also be an image loaded from the disk.
-        self.image = pygame.Surface([width, height])
-        self.image.fill(color)
-
-        # Fetch the rectangle object that has the dimensions of the image
-        # image.
-        # Update the position of this object by setting the values 
-        # of rect.x and rect.y
-        self.rect = self.image.get_rect()
+class Defend(pygame.sprite.Sprite):
+    # Constructor. Pass in the color of the block, 
+    # and its x and y position
+    def __init__(self):
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
 
 def main():
     """this function is called when the program starts.
