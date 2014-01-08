@@ -179,6 +179,19 @@ class Defend(pygame.sprite.Sprite):
     def update(self):
         pass
 
+
+class Score(pygame.sprite.Sprite):
+    # Constructor. Pass in the color of the block, 
+    # and its x and y position
+    def __init__(self, image):
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self) 
+        self.image = load_image(image)
+        self.rect = self.image.get_rect()
+    
+    def update(self):
+        pass
+
 def main():
     """this function is called when the program starts.
        it initializes everything it needs, then runs in
