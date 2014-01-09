@@ -226,6 +226,8 @@ def main():
     allsprites = pygame.sprite.RenderPlain((game_obj, mouse))
 
 #Main Loop
+    i = 0
+    frame_j = 0
     going = True
     while going:
         clock.tick(60)
@@ -255,6 +257,10 @@ def main():
         screen.blit(background, (0, 0))
         allsprites.draw(screen)
         pygame.display.flip()
+        if i % 5 == 0:
+            pygame.image.save(screen, str(frame_j) + ".png")
+            frame_j = frame_j + 1
+        i = i + 1
 
     pygame.quit()
 
