@@ -11,6 +11,7 @@ follow along in the tutorial.
 import os, pygame
 from pygame.locals import *
 from pygame.compat import geterror
+import pickle
 
 if not pygame.font: print ('Warning, fonts disabled')
 if not pygame.mixer: print ('Warning, sound disabled')
@@ -258,7 +259,8 @@ def main():
         allsprites.draw(screen)
         pygame.display.flip()
         if i % 5 == 0:
-            pygame.image.save(screen, str(frame_j) + ".png")
+            # it bring down performance a lot
+            #pygame.image.save(screen, str(frame_j) + ".png")
             frame_j = frame_j + 1
         i = i + 1
 
